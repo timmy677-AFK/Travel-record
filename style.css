@@ -1,0 +1,461 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ios-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ios-press: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --glass-bg: rgba(255, 255, 255, 0.24);
+  --glass-bg-strong: rgba(255, 255, 255, 0.34);
+  --glass-border: rgba(255, 255, 255, 0.48);
+  --glass-highlight: rgba(255, 255, 255, 0.76);
+  --glass-shadow: 0 18px 60px rgba(42, 105, 118, 0.16);
+  --glass-shadow-hover: 0 30px 90px rgba(42, 105, 118, 0.25);
+  --glass-blur: 20px;
+  color: #1b2a31;
+  background: #f7fbf9;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.dark {
+  --glass-bg: rgba(28, 48, 56, 0.68);
+  --glass-bg-strong: rgba(36, 62, 72, 0.78);
+  --glass-border: rgba(211, 244, 247, 0.22);
+  --glass-highlight: rgba(255, 255, 255, 0.34);
+  --glass-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
+  --glass-shadow-hover: 0 32px 100px rgba(0, 0, 0, 0.56);
+  color: #f2fbfb;
+  background: #0f2027;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Low-saturation travel background with subtle depth. */
+.app-bg {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 4%, rgba(126, 205, 211, 0.34), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(240, 162, 139, 0.22), transparent 28%),
+    radial-gradient(circle at 50% 92%, rgba(255, 247, 236, 0.72), transparent 36%),
+    linear-gradient(135deg, #f9fffd 0%, #eaf8f8 42%, #fff7ec 100%);
+  transition: background 360ms var(--ios-ease), color 260ms var(--ios-ease);
+}
+
+.app-bg::before {
+  pointer-events: none;
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.32) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.26) 1px, transparent 1px);
+  background-size: 38px 38px;
+  mask-image: radial-gradient(circle at center, black, transparent 72%);
+}
+
+.dark .app-bg {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(105, 204, 213, 0.22), transparent 30%),
+    radial-gradient(circle at 86% 8%, rgba(240, 162, 139, 0.13), transparent 30%),
+    linear-gradient(135deg, #10242c 0%, #18333d 50%, #182a2a 100%);
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-wrap {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 32px 20px;
+}
+
+.auth-card {
+  width: min(100%, 460px);
+  border-radius: 30px;
+  padding: 32px;
+}
+
+/* Shared glass material for cards, panels, empty states, and toolbars. */
+.glass,
+.soft-card,
+.glass-panel {
+  position: relative;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+}
+
+.glass::before,
+.soft-card::before,
+.glass-panel::before {
+  pointer-events: none;
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border-top: 1px solid var(--glass-highlight);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.26), transparent 42%);
+  opacity: 0.78;
+}
+
+.soft-card,
+.interactive-glass,
+.pressable {
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 280ms var(--ios-ease),
+    box-shadow 300ms var(--ios-ease),
+    border-color 260ms var(--ios-ease),
+    background-color 260ms var(--ios-ease),
+    filter 260ms var(--ios-ease);
+}
+
+.soft-card:hover,
+.interactive-glass:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.68);
+  background: var(--glass-bg-strong);
+  box-shadow: var(--glass-shadow-hover);
+  backdrop-filter: blur(26px) saturate(165%);
+  -webkit-backdrop-filter: blur(26px) saturate(165%);
+}
+
+.soft-card:active,
+.interactive-glass:active,
+.pressable:active {
+  transform: scale(0.98);
+  transition-duration: 120ms;
+}
+
+/* Scroll-aware glass navigation, driven by CSS variables from Vue. */
+.ios-nav {
+  --nav-alpha: 0;
+  --nav-blur: 0px;
+  --nav-shadow: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, calc(0.08 + var(--nav-alpha) * 0.34));
+  background: rgba(255, 255, 255, calc(0.05 + var(--nav-alpha) * 0.27));
+  box-shadow: 0 16px 48px rgba(37, 86, 96, calc(var(--nav-shadow) * 0.18));
+  backdrop-filter: blur(var(--nav-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--nav-blur)) saturate(160%);
+  transition: border-color 220ms var(--ios-ease), background-color 220ms var(--ios-ease), box-shadow 220ms var(--ios-ease);
+}
+
+.dark .ios-nav {
+  background: rgba(18, 36, 44, calc(0.34 + var(--nav-alpha) * 0.42));
+  box-shadow: 0 16px 54px rgba(0, 0, 0, calc(var(--nav-shadow) * 0.32));
+}
+
+.dark .text-ink {
+  color: #f2fbfb;
+}
+
+.dark .text-slate-600,
+.dark .text-slate-500,
+.dark .text-slate-400,
+.dark .text-slate-300 {
+  color: rgba(226, 242, 244, 0.82);
+}
+
+.dark .nav-pill {
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(245, 252, 252, 0.94);
+}
+
+.dark .soft-card,
+.dark .glass,
+.dark .glass-panel {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+}
+
+.nav-pill {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  white-space: nowrap;
+  transition: transform 240ms var(--ios-ease), background 240ms var(--ios-ease), box-shadow 240ms var(--ios-ease);
+}
+
+.nav-pill:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.34);
+  box-shadow: 0 12px 30px rgba(52, 112, 124, 0.16);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.nav-pill:active {
+  transform: scale(0.97);
+}
+
+.page-motion-enter-active,
+.page-motion-leave-active,
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 280ms var(--ios-ease), transform 280ms var(--ios-ease), filter 280ms var(--ios-ease);
+}
+
+.page-motion-enter-from,
+.page-motion-leave-to,
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(12px);
+  filter: blur(8px);
+}
+
+.stagger-in {
+  animation: riseIn 420ms var(--ios-ease) both;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.98);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.masonry {
+  column-count: 1;
+  column-gap: 20px;
+}
+
+@media (min-width: 720px) {
+  .masonry {
+    column-count: 2;
+  }
+}
+
+@media (min-width: 1180px) {
+  .masonry {
+    column-count: 3;
+  }
+}
+
+.masonry-item {
+  display: inline-block;
+  width: 100%;
+  break-inside: avoid;
+  margin-bottom: 20px;
+}
+
+.photo-fade {
+  opacity: 0;
+  filter: blur(16px) saturate(1.08);
+  transform: scale(1.025);
+  transition: opacity 380ms var(--ios-ease), filter 420ms var(--ios-ease), transform 420ms var(--ios-ease);
+}
+
+.photo-fade.loaded {
+  opacity: 1;
+  filter: blur(0) saturate(1);
+  transform: scale(1);
+}
+
+.drag-card {
+  transition: transform 260ms var(--ios-ease), box-shadow 260ms var(--ios-ease);
+}
+
+.sortable-ghost {
+  opacity: 0.42;
+  filter: blur(2px);
+}
+
+.sortable-chosen,
+.sortable-drag {
+  transform: scale(1.025) rotate(0.2deg);
+  box-shadow: 0 34px 95px rgba(32, 85, 96, 0.32);
+}
+
+/* Element Plus glass overrides for buttons, inputs, dialogs, and overlays. */
+.el-button {
+  border-radius: 999px;
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  transition: transform 220ms var(--ios-ease), box-shadow 220ms var(--ios-ease), background 220ms var(--ios-ease);
+}
+
+.el-button:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.36);
+  box-shadow: 0 12px 28px rgba(42, 105, 118, 0.16);
+}
+
+.el-button--primary {
+  border-color: rgba(72, 172, 184, 0.46);
+  background:
+    linear-gradient(135deg, rgba(93, 188, 197, 0.92), rgba(73, 160, 174, 0.82)),
+    rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  box-shadow: 0 14px 34px rgba(57, 135, 149, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.48);
+  text-shadow: 0 1px 2px rgba(20, 78, 88, 0.18);
+}
+
+.el-button--primary:hover,
+.el-button--primary:focus {
+  border-color: rgba(255, 255, 255, 0.68);
+  background:
+    linear-gradient(135deg, rgba(102, 202, 211, 0.98), rgba(63, 150, 166, 0.9)),
+    rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: 0 18px 46px rgba(57, 135, 149, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.58);
+}
+
+.dark .el-button--primary {
+  border-color: rgba(137, 217, 222, 0.35);
+  background:
+    linear-gradient(135deg, rgba(59, 158, 171, 0.82), rgba(39, 112, 127, 0.72)),
+    rgba(255, 255, 255, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.el-button:active {
+  transform: scale(0.97);
+}
+
+.el-input__wrapper,
+.el-textarea__inner,
+.el-select__wrapper,
+.el-date-editor.el-input__wrapper {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.24);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.34);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  transition: box-shadow 220ms var(--ios-ease), background 220ms var(--ios-ease), transform 220ms var(--ios-ease);
+}
+
+.el-date-editor.el-input__wrapper {
+  width: 100%;
+  min-width: 0;
+}
+
+.el-input__wrapper:hover,
+.el-select__wrapper:hover,
+.el-textarea__inner:hover {
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.el-input__wrapper.is-focus,
+.el-select__wrapper.is-focused,
+.el-textarea__inner:focus {
+  background: rgba(255, 255, 255, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(93, 188, 197, 0.78), 0 0 0 5px rgba(93, 188, 197, 0.12);
+}
+
+.el-overlay {
+  background: rgba(17, 34, 40, 0.24) !important;
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+}
+
+.el-dialog,
+.el-message-box {
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg-strong);
+  box-shadow: 0 32px 100px rgba(26, 70, 80, 0.25);
+  backdrop-filter: blur(28px) saturate(170%);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+}
+
+.el-dialog {
+  animation: dialogIn 360ms var(--ios-ease) both;
+}
+
+@keyframes dialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(34px) scale(0.98);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.el-dialog__title,
+.el-form-item__label {
+  color: #1b2a31;
+  font-weight: 700;
+}
+
+.dark .el-dialog__title,
+.dark .el-form-item__label {
+  color: #ecf8f8;
+}
+
+.dark .el-input__wrapper,
+.dark .el-textarea__inner,
+.dark .el-select__wrapper {
+  background: rgba(255, 255, 255, 0.14);
+  color: #f4fbfb;
+  box-shadow: inset 0 0 0 1px rgba(211, 244, 247, 0.18);
+}
+
+.dark .el-input__inner,
+.dark .el-select__placeholder,
+.dark .el-range-input,
+.dark .el-textarea__inner {
+  color: #f4fbfb;
+}
+
+.dark .el-input__wrapper.is-focus,
+.dark .el-select__wrapper.is-focused,
+.dark .el-textarea__inner:focus {
+  background: rgba(255, 255, 255, 0.13);
+  box-shadow: inset 0 0 0 1px rgba(137, 217, 222, 0.72), 0 0 0 5px rgba(137, 217, 222, 0.11);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
